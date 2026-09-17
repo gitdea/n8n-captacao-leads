@@ -1,0 +1,269 @@
+{
+  "name": "Captacao de Leads",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Cadastro de Interesse",
+        "formDescription": "Preencha seus dados para receber novidades e condicoes exclusivas.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nome Completo",
+              "fieldName": "nome",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "E-mail",
+              "fieldType": "email",
+              "fieldName": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Telefone (WhatsApp)",
+              "fieldName": "telefone",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Empresa",
+              "fieldName": "empresa"
+            },
+            {
+              "fieldLabel": "Area de Interesse",
+              "fieldType": "dropdown",
+              "fieldName": "interesse",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Automacao de Processos"
+                  },
+                  {
+                    "option": "Integracao de Sistemas"
+                  },
+                  {
+                    "option": "Inteligencia Artificial"
+                  },
+                  {
+                    "option": "Outro"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldType": "hiddenField",
+              "fieldName": "origem",
+              "fieldValue": "formulario_n8n"
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Quero me cadastrar",
+          "path": "captacao-leads",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Cadastro realizado com sucesso! Em breve voce recebera um e-mail de boas-vindas."
+            }
+          }
+        }
+      },
+      "id": "de16dc2a-3d42-46ba-8edd-161a3665922e",
+      "name": "Formulario de Captacao",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "4a873e6c-1f68-45a6-be5c-cbc6e776146e"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Tvx4ez03azm5w3aV"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nome": "={{ $json.nome }}",
+            "email": "={{ $json.email }}",
+            "telefone": "={{ $json.telefone }}",
+            "empresa": "={{ $json.empresa }}",
+            "interesse": "={{ $json.interesse }}",
+            "origem": "={{ $json.origem }}",
+            "captado_em": "={{ $now.toISO() }}"
+          },
+          "schema": [
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "interesse",
+              "displayName": "interesse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "origem",
+              "displayName": "origem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "captado_em",
+              "displayName": "captado_em",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "date",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "63f76493-ebac-4528-8795-a60bc65e0432",
+      "name": "Salvar Lead na Base",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "matheus150525@gmail.com",
+        "subject": "=Nova lead captada: {{ $json.nome }}",
+        "message": "=<h2>Nova lead cadastrada!</h2>\n<p><strong>Nome:</strong> {{ $json.nome }}</p>\n<p><strong>E-mail:</strong> {{ $json.email }}</p>\n<p><strong>Telefone:</strong> {{ $json.telefone }}</p>\n<p><strong>Empresa:</strong> {{ $json.empresa }}</p>\n<p><strong>Interesse:</strong> {{ $json.interesse }}</p>\n<p><strong>Origem:</strong> {{ $json.origem }}</p>\n<hr>\n<p><em>Captado em {{ $now.toFormat('dd/MM/yyyy HH:mm') }}</em></p>",
+        "options": {}
+      },
+      "id": "b1c2a5d9-ff53-4022-aaab-d3bb4ac804e9",
+      "name": "Notificar Nova Lead",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        0
+      ],
+      "webhookId": "2d5f9da3-5036-489f-810e-406ede00aa53",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KRKXn2iXjRn2nbLI",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $(\"Formulario de Captacao\").item.json.email }}",
+        "subject": "Bem-vindo(a)! Obrigado pelo seu interesse",
+        "message": "=<h2>Ola, {{ $(\"Formulario de Captacao\").item.json.nome }}!</h2>\n<p>Seu cadastro foi realizado com sucesso.</p>\n<p>Agradecemos o interesse em <strong>{{ $(\"Formulario de Captacao\").item.json.interesse }}</strong>.</p>\n<p>Em breve entraremos em contato com mais informacoes.</p>\n<br>\n<p>Atenciosamente,<br>Equipe de Atendimento</p>",
+        "options": {}
+      },
+      "id": "1b8a2bea-e5cf-4def-bbc9-fe78bd3d8c4d",
+      "name": "Enviar Boas-Vindas",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "webhookId": "83188a2a-9946-4e38-802f-e560472bf8e1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KRKXn2iXjRn2nbLI",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Formulario de Captacao": {
+      "main": [
+        [
+          {
+            "node": "Salvar Lead na Base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Lead na Base": {
+      "main": [
+        [
+          {
+            "node": "Notificar Nova Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notificar Nova Lead": {
+      "main": [
+        [
+          {
+            "node": "Enviar Boas-Vindas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "493129f1-5441-4526-b127-3987c5c7c2bb",
+  "meta": {
+    "instanceId": "3eedadf3b149956a41c3dd2b79eed078978235be5743122dc3426cc2dd524cfa"
+  },
+  "nodeGroups": [],
+  "id": "RaDXcVy5lcyXcfSM",
+  "tags": []
+}
